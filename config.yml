@@ -1,4 +1,0 @@
-development:
-  db: db/development.sqlite
-production:
-  db: db/production.sqlite
