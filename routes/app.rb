@@ -1,9 +1,10 @@
 require 'sinatra/base'
+require_relative 'base'
 
 module Routes
-    class AppController < Sinatra::Base
-        configure :production, :development do
-            enable :logging
+    class AppController < BaseController
+        get '/' do
+            json({ 'hello': 'world' });
         end
     end
 end
