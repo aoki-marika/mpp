@@ -4,7 +4,8 @@ require_relative '../utilities/madokami.rb'
 
 module Routes
     class BaseController < Sinatra::Base
-        configure :production, :development do
+
+        configure :development, :production do
             enable :logging
             enable :dump_errors
         end
