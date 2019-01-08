@@ -1,3 +1,4 @@
-require_relative 'app'
+require_relative 'routes/app.rb'
 
-run Sinatra::Application
+map '/' do run Routes::AppController end
+
