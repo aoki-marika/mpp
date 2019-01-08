@@ -1,6 +1,6 @@
 require 'sinatra/base'
-require 'net/http'
-require 'uri'
+
+require_relative '../utilities/madokami.rb'
 
 module Routes
     class BaseController < Sinatra::Base
@@ -21,23 +21,6 @@ module Routes
             halt json({ 'status': status_code, 'message': message });
         end
 
-        # Make a request to the given path on Madokami with the given credentials.
-        # Yields the response when the request finishes.
-        def request_madokami(path, username, password)
-            # get the uri to request
-            uri = URI.join('https://manga.madokami.al/', path);
-
-            # start an ssl connection
-            Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
-                # build the request with credentials
-                request = Net::HTTP::Get.new(uri);
-                request.basic_auth(username, password);
-
-                # make the request and yield the response
-                yield http.request(request);
-            end
-        end
-
         # verify credentials before every endpoint
         before do
             # placed here as its called in multiple places
@@ -54,7 +37,7 @@ module Routes
                 password = auth.credentials.last
 
                 # verify the credentials by requesting the madokami homepage
-                request_madokami('/', username, password) { |response|
+                Utilities::Madokami::request('/', username, password) { |response|
                     case response.code
                         when '200'
                             pass
