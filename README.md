@@ -1,7 +1,8 @@
 # MPP (Madokami++)
-A third party API for [Madokami](https://manga.madokami.al/) that aims to extend functionality and make a more tailored experience.
+A third party API for [Madokami](https://manga.madokami.al/) that aims to extend functionality and provide a more tailored experience.
 
 ## Dependencies
+* `bundler`
 * `sinatra`
 * `sqlite3`
 * `sequel`
