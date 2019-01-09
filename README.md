@@ -7,22 +7,11 @@ A third party API for [Madokami](https://manga.madokami.al/) that aims to extend
 * `sequel`
 
 ## Running
-* Development:
+`-E production` is optional and used for running in production mode.
 
 ```
 git clone https://github.com/aoki-marika/mpp
 cd mpp
 bundle install
-sequel -e development config/database.yml -m db/migrations
-rackup
-```
-
-* Production:
-
-```
-git clone https://github.com/aoki-marika/mpp
-cd mpp
-bundle install
-sequel -e production config/database.yml -m db/migrations
-rackup -E production
+rackup [-E production]
 ```
