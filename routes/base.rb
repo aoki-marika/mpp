@@ -39,9 +39,14 @@ module Routes
                 password = auth.credentials.last
 
                 # check if the user is already verified in the db
-                if Model::User.first(name: username) != nil
-                    # allow access to the endpoint, the user is already valid
-                    pass;
+                if (user = Model::User.first(name: username)) != nil
+                    if password == user.password
+                        # allow access to the endpoint, the user is already valid
+                        pass;
+                    else
+                        # the user is verified, but the password is incorrect
+                        invalid_credentials();
+                    end
                 else
                     # verify the credentials by requesting the madokami homepage
                     Utilities::Madokami::request('/', username, password) { |response|
