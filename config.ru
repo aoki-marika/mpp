@@ -6,7 +6,7 @@ def expand_dirname(path, base_file: __FILE__)
 end
 
 DB_CONFIG = expand_dirname('config/database.yml')
-DB_MIGRATIONS = expand_dirname('db/migrations');
+DB_MIGRATIONS = expand_dirname('db/migrations')
 
 # get the db path
 db_config = YAML.load_file(DB_CONFIG)[ENV['RACK_ENV']]
