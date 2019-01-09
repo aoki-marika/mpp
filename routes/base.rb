@@ -1,6 +1,7 @@
 require 'sinatra/base'
 
 require_relative '../utilities/madokami.rb'
+require_relative '../models/user.rb'
 
 module Routes
     class BaseController < Sinatra::Base
@@ -37,25 +38,35 @@ module Routes
                 username = auth.credentials.first
                 password = auth.credentials.last
 
-                # verify the credentials by requesting the madokami homepage
-                Utilities::Madokami::request('/', username, password) { |response|
-                    case response.code
-                        when '200'
-                            pass
-                        when '401'
-                            invalid_credentials();
-                        when '408', '503'
-                            error('503', 'Unable to connect to Madokami to verify credentials.');
-                        else
-                            logger.error("An unexpected error occured while verifying credentials.\n" \
-                                         "Headers:\n" \
-                                         "#{response.to_hash}\n" \
-                                         "Body:\n" \
-                                         "#{response.body}\n");
+                # check if the user is already verified in the db
+                if Model::User.first(name: username) != nil
+                    # allow access to the endpoint, the user is already valid
+                    pass;
+                else
+                    # verify the credentials by requesting the madokami homepage
+                    Utilities::Madokami::request('/', username, password) { |response|
+                        case response.code
+                            when '200'
+                                # register the user as valid in the database
+                                Model::User.create(name: username, password: password);
 
-                            error('500', 'An unexpected error occured while verifying credentials.');
-                    end
-                }
+                                # allow access to the endpoint
+                                pass;
+                            when '401'
+                                invalid_credentials();
+                            when '408', '503'
+                                error('503', 'Unable to connect to Madokami to verify credentials.');
+                            else
+                                logger.error("An unexpected error occured while verifying credentials.\n" \
+                                             "Headers:\n" \
+                                             "#{response.to_hash}\n" \
+                                             "Body:\n" \
+                                             "#{response.body}\n");
+
+                                error('500', 'An unexpected error occured while verifying credentials.');
+                        end
+                    }
+                end
             else
                 # the basic auth credentials were invalid in some way
                 invalid_credentials();
