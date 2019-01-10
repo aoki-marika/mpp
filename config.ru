@@ -18,9 +18,7 @@ DB = Sequel.connect(db_path)
 # make sure the database is up to date
 Sequel.extension :migration
 
-if Sequel::Migrator.is_current?(DB, DB_MIGRATIONS)
-    puts "Database '#{db_path}' is up to date."
-else
+if !Sequel::Migrator.is_current?(DB, DB_MIGRATIONS)
     puts "Migrating database '#{db_path}'..."
     Sequel::Migrator.run(DB, DB_MIGRATIONS)
 end
