@@ -41,7 +41,7 @@ class BaseController < Sinatra::Base
                 password == user.password ? pass : invalid_credentials
             else
                 # verify for registration by checking the credentials against madokami
-                Madokami.request('/checkauth', username, password) { |response|
+                Madokami.request('/', username, password) { |response|
                     case response.code
                         when '200'
                             # register the user
