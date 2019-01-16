@@ -16,3 +16,12 @@ cd mpp
 bundle install
 rackup [-E production]
 ```
+
+## Importing metadata
+
+* Download the latest dump from `Info/` on Madokami, extract it, and convert it using [mysql2sqlite](https://github.com/dumblob/mysql2sqlite).
+* Place it in `db/madokami.sqlite`
+* Delete any existing MPP database in `db/`.
+* Run MPP.
+
+The database will import once the MPP database is created.
