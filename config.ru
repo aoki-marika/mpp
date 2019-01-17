@@ -39,10 +39,50 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
         $logger.info "Importing database 'sqlite://#{import_path}'..."
 
         Sequel.connect("sqlite://#{import_path}") do |import_db|
-            import_series = import_db[:series].join(import_db[:path_records].select(:path, :series_id), series_id: :id)
-                                              .select(:mu_id, :name, :path, :year, :description, :origin_status, :scan_status, :image, :created_at, :updated_at)
+            # get the series metadata
+            import_series = import_db[:series].distinct
+                                              .select(:id, :mu_id, :name, :path, :year, :description, :origin_status, :scan_status, :image, :created_at, :updated_at)
+                                              .join(import_db[:path_records].select(:path, :series_id), series_id: :id)
+                                              .group(:id)
 
+            # todo: probably trim "From __:" and "Note:" from series descriptions, potentially move note into its own column
+            # todo: filter out unwanted directories, e.g. `/Manga/Non-English`
+
+            # get the related series metadata
+            require_relative 'app/models/related_type.rb'
+            import_related = import_db[:related_series].select(:id, :series_id, :related_mu_id, :type).all.each do |r|
+                case r[:type]
+                    when 'Main Story'
+                        type = RelatedType::MAIN_STORY
+                    when 'Adapted From'
+                        type = RelatedType::ADAPTED_FROM
+                    when 'Alternate Story'
+                        type = RelatedType::ALTERNATE_STORY
+                    when 'Spin-Off'
+                        type = RelatedType::SPIN_OFF
+                    when 'Side Story'
+                        type = RelatedType::SIDE_STORY
+                    when 'Prequel'
+                        type = RelatedType::PREQUEL
+                    when 'Sequel'
+                        type = RelatedType::SEQUEL
+                end
+
+                r[:type] = type
+            end
+
+            # import series
+            $logger.info "Importing series..."
             $db[:series].multi_insert(import_series)
+
+            # import related series
+            $logger.info "Importing related series..."
+
+            # disable foreign key checks so all the related series can be imported then verified
+            $db.run 'PRAGMA foreign_keys = OFF'
+            $db[:related_series].multi_insert(import_related)
+            $db[:related_series].exclude(series_id: $db[:series].select(:id)).delete
+            $db.run 'PRAGMA foreign_keys = ON'
         end
     end
 end
