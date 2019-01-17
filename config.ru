@@ -40,10 +40,11 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
 
         Sequel.connect("sqlite://#{import_path}") do |import_db|
             # get the series metadata
-            import_series = import_db[:series].distinct
-                                              .select(:id, :mu_id, :name, :path, :year, :description, :origin_status, :scan_status, :image, :created_at, :updated_at)
-                                              .join(import_db[:path_records].select(:path, :series_id), series_id: :id)
-                                              .group(:id)
+            import_series = import_db[:series].select(:id, :mu_id, :name, :year, :description, :origin_status, :scan_status, :image, :created_at, :updated_at)
+
+            # get the series paths
+            import_series_paths = import_db[:path_records].where(directory: 1)
+                                                          .select(:series_id, :path)
 
             # todo: probably trim "From __:" and "Note:" from series descriptions, potentially move note into its own column
             # todo: filter out unwanted directories, e.g. `/Manga/Non-English`
@@ -71,18 +72,15 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
                 r[:type] = type
             end
 
-            # import series
+            # import all the fetched data
             $logger.info "Importing series..."
             $db[:series].multi_insert(import_series)
 
-            # import related series
-            $logger.info "Importing related series..."
+            $logger.info "Importing series paths..."
+            $db[:series_paths].multi_insert(import_series_paths)
 
-            # disable foreign key checks so all the related series can be imported then verified
-            $db.run 'PRAGMA foreign_keys = OFF'
+            $logger.info "Importing related series..."
             $db[:related_series].multi_insert(import_related)
-            $db[:related_series].exclude(series_id: $db[:series].select(:id)).delete
-            $db.run 'PRAGMA foreign_keys = ON'
         end
     end
 end

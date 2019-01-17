@@ -4,7 +4,6 @@ Sequel.migration do
             primary_key :id
             Integer :mu_id, :null => false
             String :name, :null => false
-            String :path, :size => 4096, :null => false
             Integer :year, :null => false
             String :description, :text => true, :collate => 'BINARY'
             String :origin_status, :default => nil
