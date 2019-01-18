@@ -71,6 +71,10 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
             import_paths = import_db[:path_records].where(directory: 1)
                                                    .select(:id, :series_id, :path)
 
+            # get the archives
+            import_archives = import_db[:path_records].where(directory: 0)
+                                                      .select(:id, :parent_id, :path, :size, :created_at, :updated_at)
+
             # import all the fetched data
             $logger.info "Importing series..."
             $db[:series].multi_insert(import_series)
@@ -80,6 +84,9 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
 
             $logger.info "Importing paths..."
             $db[:paths].multi_insert(import_paths)
+
+            $logger.info "Importing archives..."
+            $db[:archives].multi_insert(import_archives.map { |a| a[:path_id] = a.delete(:parent_id); a })
         end
     end
 end
