@@ -84,17 +84,17 @@ end
 
 # genres
 insert_facet('genres', 'genre')
-insert_facet_series('genre_series', 'genre')
+insert_facet_series('genres_series', 'genre')
 
 # categories
 insert_facet('categories', 'category')
-insert_facet_series('category_series', 'category')
+insert_facet_series('categories_series', 'category')
 
 # titles
 insert_facet('titles', 'title')
-insert_facet_series('title_series', 'title')
+insert_facet_series('titles_series', 'title')
 
 # people
 insert_facet('people', 'artist', 'author')
-insert_facet_series('artist_series', 'artist')
-insert_facet_series('author_series', 'author')
+insert_facet_series('artists_series', 'artist')
+insert_facet_series('authors_series', 'author')
