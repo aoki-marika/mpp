@@ -19,9 +19,6 @@ rackup [-E production]
 
 ## Importing metadata
 
+* Make sure you've run MPP at least once so it can create the database.
 * Download the latest dump from `Info/` on Madokami, extract it, and convert it using [mysql2sqlite](https://github.com/dumblob/mysql2sqlite).
-* Place it in `db/madokami.sqlite`
-* Delete any existing MPP database in `db/`.
-* Run MPP.
-
-The database will import once the MPP database is created.
+* Run `ruby utils/config.rb /path/to/madokami.sqlite db/environment.sqlite`, `environment` being either `development` or `production`.
