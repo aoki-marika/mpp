@@ -40,14 +40,8 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
 
         Sequel.connect("sqlite://#{import_path}") do |import_db|
             # get the series metadata
+            # todo: probably trim "From [source]:" and "Note:" from series descriptions, potentially move note into its own column
             import_series = import_db[:series].select(:id, :mu_id, :name, :year, :description, :origin_status, :scan_status, :image, :created_at, :updated_at)
-
-            # get the series paths
-            import_series_paths = import_db[:path_records].where(directory: 1)
-                                                          .select(:series_id, :path)
-
-            # todo: probably trim "From __:" and "Note:" from series descriptions, potentially move note into its own column
-            # todo: filter out unwanted directories, e.g. `/Manga/Non-English`
 
             # get the related series metadata
             require_relative 'app/models/related_type.rb'
@@ -72,15 +66,20 @@ if !Sequel::Migrator.is_current?($db, db_migrations)
                 r[:type] = type
             end
 
+            # get the paths
+            # todo: filter out unwanted directories, e.g. `/Manga/Non-English`
+            import_paths = import_db[:path_records].where(directory: 1)
+                                                   .select(:id, :series_id, :path)
+
             # import all the fetched data
             $logger.info "Importing series..."
             $db[:series].multi_insert(import_series)
 
-            $logger.info "Importing series paths..."
-            $db[:series_paths].multi_insert(import_series_paths)
-
             $logger.info "Importing related series..."
             $db[:related_series].multi_insert(import_related)
+
+            $logger.info "Importing paths..."
+            $db[:paths].multi_insert(import_paths)
         end
     end
 end
