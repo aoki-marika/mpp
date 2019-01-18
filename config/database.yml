@@ -1,6 +1,0 @@
-development:
-  adapter: sqlite
-  database: db/development.sqlite
-production:
-  adapter: sqlite
-  database: db/production.sqlite

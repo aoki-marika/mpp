@@ -14,19 +14,18 @@ def expand_dirname(path, base_file: __FILE__)
 end
 
 # get the db path
-db_config = YAML.load_file(expand_dirname('config/database.yml'))[ENV['RACK_ENV']]
-db_path = "#{db_config['adapter']}://#{expand_dirname(db_config['database'])}"
+db_path = expand_dirname("db/#{ENV['RACK_ENV']}.sqlite")
 db_fresh = !File.exists?(db_path)
 
 # connect to the db
-$db = Sequel.connect(db_path)
+$db = Sequel.connect("sqlite://#{db_path}")
 
 # make sure the database is up to date
 Sequel.extension :migration
 db_migrations = expand_dirname('db/migrations')
 
 if !Sequel::Migrator.is_current?($db, db_migrations)
-    $logger.info "Migrating database '#{db_path}'..."
+    $logger.info "Migrating database 'sqlite://#{db_path}'..."
     Sequel::Migrator.run($db, db_migrations)
 
     # import the mangaindex database if it exists and the db is fresh
