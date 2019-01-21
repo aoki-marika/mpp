@@ -1,7 +1,6 @@
 require_relative 'base.rb'
+require_relative 'series.rb'
 
 class ApplicationController < BaseController
-    get '/' do
-        json({ 'hello': 'world' })
-    end
+    use SeriesController
 end

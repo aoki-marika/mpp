@@ -30,4 +30,4 @@ end
 require_relative 'app/controllers/application.rb'
 
 # map and run the application
-map '/' do run ApplicationController end
+map '/api/v1/' do run ApplicationController end
