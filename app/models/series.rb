@@ -1,12 +1,14 @@
-require_relative 'model.rb'
+require 'sequel'
+
 require_relative 'path.rb'
 require_relative 'related_series.rb'
 require_relative 'genre.rb'
 require_relative 'category.rb'
 require_relative 'title.rb'
 require_relative 'person.rb'
+require_relative 'serializer.rb'
 
-class Series < Model
+class Series < Sequel::Model
     one_to_many :paths
     one_to_many :related_series, class: :RelatedSeries
 
@@ -15,21 +17,21 @@ class Series < Model
     many_to_many :titles, join_table: :titles_series
     many_to_many :artists, join_table: :artists_series, right_key: :person_id, class: :Person
     many_to_many :authors, join_table: :authors_series, right_key: :person_id, class: :Person
+end
 
-    def api_data
-        {
-            :mu_id => @values[:mu_id],
-            :title => @values[:name], #todo: rename series.name to title?
-            :alternate_titles => titles,
-            :year => @values[:year],
-            :artists => artists,
-            :authors => authors,
-            :description => @values[:description],
-            :origin_status => @values[:origin_status],
-            :scan_status => @values[:scan_status],
-            :image => @values[:image],
-            :genres => genres,
-            :categories => categories,
-        }
-    end
+class SeriesSerializer < Serializer
+    attribute :title do object.name end
+    attribute :alternate_titles do object.titles.map { |t| t.name } end
+    attribute :year
+    attribute :description
+    attribute :origin_status
+    attribute :scan_status
+    attribute :image do "https://www.mangaupdates.com/image/#{object.image}" end
+
+    has_many :paths
+    has_many :related_series
+    has_many :genres
+    has_many :categories
+    has_many :artists
+    has_many :authors
 end

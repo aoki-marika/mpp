@@ -1,10 +1,7 @@
-require_relative 'model'
+require 'sequel'
+
 require_relative 'series.rb'
 
-class Title < Model
+class Title < Sequel::Model
     many_to_many :series
-
-    def api_data
-        @values[:name]
-    end
 end

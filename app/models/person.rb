@@ -1,12 +1,14 @@
-require_relative 'model.rb'
+require 'sequel'
+
 require_relative 'series.rb'
+require_relative 'serializer.rb'
 
-class Person < Model
+class Person < Sequel::Model
     many_to_many :series
+end
 
-    def api_data
-        {
-            :name => @values[:name],
-        }
-    end
+class PersonSerializer < Serializer
+    attribute :name
+
+    has_many :series
 end
