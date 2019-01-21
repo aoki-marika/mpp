@@ -2,6 +2,7 @@ require 'sinatra/base'
 
 require_relative '../utils/madokami.rb'
 require_relative '../models/user.rb'
+require_relative '../models/page.rb'
 
 class BaseController < Sinatra::Base
     configure :development, :production do
@@ -11,14 +12,39 @@ class BaseController < Sinatra::Base
 
     # Prepares the response for a JSON body and returns the JSON representation of `value`.
     def json(value)
-        content_type :json
-        value.to_json
+        if value == nil
+            not_found
+        else
+            content_type :json
+
+            if value.respond_to? 'to_api'
+                value_api = value.to_api
+
+                if value_api == nil
+                    not_found
+                else
+                    value_api.to_json
+                end
+            else
+                value.to_json
+            end
+        end
     end
 
-    # Returns an error response with the given status code and message.
+    # Halts with an error response with the given status code and message.
     def error(status_code, message)
         status status_code
-        halt json({ 'status': status_code, 'message': message })
+        halt json({ :status => status_code, :message => message })
+    end
+
+    # Halts with a 404 not found error.
+    def not_found
+        error 404, 'Not found.'
+    end
+
+    # Returns a page in JSON for the given model, using the request params.
+    def page(model)
+        json(Page.new(model, page: params[:page].to_i, limit: params[:limit].to_i))
     end
 
     # verify credentials before every endpoint
