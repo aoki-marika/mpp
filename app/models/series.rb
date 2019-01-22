@@ -29,7 +29,6 @@ class SeriesSerializer < Serializer
     attribute :image do "https://www.mangaupdates.com/image/#{object.image}" end
 
     has_many :paths
-    has_many :related_series
     has_many :genres
     has_many :categories
     has_many :artists
