@@ -4,11 +4,15 @@ require_relative 'path.rb'
 require_relative 'serializer.rb'
 
 class Archive < Sequel::Model
-    many_to_one :paths
+    # todo: rename db columns to match
+    many_to_one :parent, key: :path_id, class: :Path
 end
 
 class ArchiveSerializer < Serializer
-    attribute :name
+    attribute :path
+    attribute :size
+    attribute :created_at
+    attribute :updated_at
 
-    has_one :paths
+    has_one :parent
 end
