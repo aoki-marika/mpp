@@ -82,6 +82,10 @@ def insert_facet_series(table, type)
     SQL
 end
 
+# associated titles
+insert_facet('associated_titles', 'title')
+insert_facet_series('associated_titles_series', 'title')
+
 # genres
 insert_facet('genres', 'genre')
 insert_facet_series('genres_series', 'genre')
@@ -90,11 +94,14 @@ insert_facet_series('genres_series', 'genre')
 insert_facet('categories', 'category')
 insert_facet_series('categories_series', 'category')
 
-# titles
-insert_facet('titles', 'title')
-insert_facet_series('titles_series', 'title')
-
 # people
 insert_facet('people', 'artist', 'author')
 insert_facet_series('artists_series', 'artist')
 insert_facet_series('authors_series', 'author')
+
+# there are lots of title facets that are the same as their series' title, so remove those
+$db.execute 'PRAGMA foreign_keys = ON'
+$db.execute <<-SQL
+    DELETE FROM destination.associated_titles
+        WHERE name IN (SELECT title FROM destination.series)
+SQL

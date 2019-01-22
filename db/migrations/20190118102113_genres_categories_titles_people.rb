@@ -11,10 +11,14 @@ Sequel.migration do
 
         def create_relation_table(name, model_key_name, model_table_name)
             create_table(name) do
-                foreign_key model_key_name, model_table_name, :index => true, :null => false
+                foreign_key model_key_name, model_table_name, :on_delete => :cascade, :index => true, :null => false
                 foreign_key :series_id, :series, :index => true, :null => false
             end
         end
+
+        # associated titles
+        create_model_table(:associated_titles)
+        create_relation_table(:associated_titles_series, :associated_title_id, :associated_titles)
 
         # genres
         create_model_table(:genres)
@@ -23,10 +27,6 @@ Sequel.migration do
         # categories
         create_model_table(:categories)
         create_relation_table(:categories_series, :category_id, :categories)
-
-        # titles
-        create_model_table(:titles)
-        create_relation_table(:titles_series, :title_id, :titles)
 
         # people
         create_model_table(:people)
