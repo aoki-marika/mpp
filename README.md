@@ -6,6 +6,8 @@ A third party API for [Madokami](https://manga.madokami.al/) that aims to extend
 * `sinatra`
 * `sqlite3`
 * `sequel`
+* `sinja`
+* `sinja-sequel`
 
 ## Running
 `-E production` is optional and used for running in production mode.
