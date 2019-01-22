@@ -7,6 +7,7 @@ require_relative 'genres.rb'
 require_relative 'categories.rb'
 require_relative 'people.rb'
 require_relative 'paths.rb'
+require_relative 'archives.rb'
 require_relative '../models/user.rb'
 require_relative '../models/errors.rb'
 require_relative '../utils/madokami.rb'
@@ -61,6 +62,7 @@ class ApplicationController < Sinatra::Base
     resource :categories, &CategoriesController
     resource :people, &PeopleController
     resource :paths, &PathsController
+    resource :archives, &ArchivesController
 
     freeze_jsonapi
 end
