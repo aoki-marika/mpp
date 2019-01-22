@@ -7,7 +7,7 @@ Sequel.migration do
             Integer :year, :null => false
             String :description, :text => true, :collate => 'BINARY'
             String :origin_status, :default => nil
-            String :scan_status, :default => nil
+            Bool :completely_scanlated, :default => false, :null => false
             String :image, :default => nil
             Time :created_at, :default => '0000-00-00 00:00:00', :null => false
             Time :updated_at, :default => '0000-00-00 00:00:00', :null => false

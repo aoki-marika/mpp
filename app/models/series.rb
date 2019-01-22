@@ -25,7 +25,7 @@ class SeriesSerializer < Serializer
     attribute :year
     attribute :description
     attribute :origin_status
-    attribute :scan_status
+    attribute :completely_scanlated
     attribute :image do "https://www.mangaupdates.com/image/#{object.image}" end
 
     has_many :paths

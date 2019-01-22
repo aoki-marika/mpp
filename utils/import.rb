@@ -15,9 +15,12 @@ $db.execute 'ATTACH DATABASE ? AS destination', destination
 # todo: remove 'From [source]:' and `Note:` from description, potentially move note into it's own column
 $db.execute <<-SQL
     INSERT INTO destination.series
-        SELECT id, mu_id, name, year, description, origin_status, scan_status, image, created_at, updated_at
+        SELECT id, mu_id, name, year, description, origin_status, IFNULL(scan_status, 0), image, created_at, updated_at
         FROM source.series;
 SQL
+
+$db.execute 'UPDATE destination.series SET completely_scanlated = 1 WHERE completely_scanlated = "Yes"';
+$db.execute 'UPDATE destination.series SET completely_scanlated = 0 WHERE completely_scanlated = "No"';
 
 # related series
 $db.execute <<-SQL
