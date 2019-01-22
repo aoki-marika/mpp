@@ -5,6 +5,7 @@ require 'sinja/sequel/helpers'
 require_relative 'series.rb'
 require_relative 'genres.rb'
 require_relative 'categories.rb'
+require_relative 'people.rb'
 require_relative '../models/user.rb'
 require_relative '../models/errors.rb'
 require_relative '../utils/madokami.rb'
@@ -57,6 +58,7 @@ class ApplicationController < Sinatra::Base
     resource :series, &SeriesController
     resource :genres, &GenresController
     resource :categories, &CategoriesController
+    resource :people, &PeopleController
 
     freeze_jsonapi
 end
