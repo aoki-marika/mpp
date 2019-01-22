@@ -17,8 +17,14 @@ end
 db_path = expand_dirname("db/#{ENV['RACK_ENV']}.sqlite")
 $db = Sequel.connect("sqlite://#{db_path}")
 
-# make sure the database is up to date
+# load extensions
 Sequel.extension :migration
+
+$db.extension :pagination
+
+Sequel::Model.plugin :tactical_eager_loading
+
+# make sure the database is up to date
 db_migrations = expand_dirname('db/migrations')
 
 if !Sequel::Migrator.is_current?($db, db_migrations)
@@ -30,4 +36,4 @@ end
 require_relative 'app/controllers/application.rb'
 
 # map and run the application
-map '/api/v1/' do run ApplicationController end
+map '/' do run ApplicationController end

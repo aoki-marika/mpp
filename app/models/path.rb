@@ -10,7 +10,7 @@ class Path < Sequel::Model
 end
 
 class PathSerializer < Serializer
-    attribute :name
+    attribute :path
 
     has_one :series
     has_many :archives
