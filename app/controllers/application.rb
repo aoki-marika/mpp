@@ -3,6 +3,7 @@ require 'sinatra/jsonapi'
 require 'sinja/sequel/helpers'
 
 require_relative 'series.rb'
+require_relative 'genres.rb'
 require_relative '../models/user.rb'
 require_relative '../models/errors.rb'
 require_relative '../utils/madokami.rb'
@@ -53,6 +54,7 @@ class ApplicationController < Sinatra::Base
 
     # connect resources to their controllers
     resource :series, &SeriesController
+    resource :genres, &GenresController
 
     freeze_jsonapi
 end
