@@ -51,5 +51,8 @@ class ApplicationController < Sinatra::Base
         end
     end
 
+    # connect resources to their controllers
+    resource :series, &SeriesController
+
     freeze_jsonapi
 end
