@@ -3,6 +3,7 @@ require 'sinatra/jsonapi'
 require 'sinja/sequel/helpers'
 
 require_relative 'series.rb'
+require_relative 'series_relationships.rb'
 require_relative 'genres.rb'
 require_relative 'categories.rb'
 require_relative 'people.rb'
@@ -58,6 +59,7 @@ class ApplicationController < Sinatra::Base
 
     # connect resources to their controllers
     resource :series, &SeriesController
+    resource :series_relationships, &SeriesRelationshipsController
     resource :genres, &GenresController
     resource :categories, &CategoriesController
     resource :people, &PeopleController

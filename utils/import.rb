@@ -1,6 +1,6 @@
 require 'sqlite3'
 
-require_relative '../app/models/related_type.rb'
+require_relative '../app/models/series_relationship_type.rb'
 
 # pass the madokami db first and the mpp db second
 source = ARGV[0]
@@ -24,24 +24,24 @@ $db.execute 'UPDATE destination.series SET completely_scanlated = 0 WHERE comple
 
 # related series
 $db.execute <<-SQL
-    INSERT INTO destination.related_series
-        SELECT id, series_id, related_mu_id, type
+    INSERT OR IGNORE INTO destination.series_relationships
+        SELECT id, series_id, (SELECT id FROM destination.series WHERE destination.series.mu_id = related_mu_id LIMIT 1), type
         FROM source.related_series;
 SQL
 
 # find the old type and replace it with the new type in the related series table
 def replace_related_type(old, new)
-    $db.execute "UPDATE destination.related_series SET type = ? WHERE type = ?", new, old;
+    $db.execute "UPDATE destination.series_relationships SET type = ? WHERE type = ?", new, old;
 end
 
-# related series types
-replace_related_type 'Main Story', RelatedType::MAIN_STORY
-replace_related_type 'Adapted From', RelatedType::ADAPTED_FROM
-replace_related_type 'Alternate Story', RelatedType::ALTERNATE_STORY
-replace_related_type 'Spin-Off', RelatedType::SPIN_OFF
-replace_related_type 'Side Story', RelatedType::SIDE_STORY
-replace_related_type 'Prequel', RelatedType::PREQUEL
-replace_related_type 'Sequel', RelatedType::SEQUEL
+# series relationships types
+replace_related_type 'Main Story', SeriesRelationshipType::MAIN_STORY
+replace_related_type 'Adapted From', SeriesRelationshipType::ADAPTATION
+replace_related_type 'Alternate Story', SeriesRelationshipType::ALTERNATE_STORY
+replace_related_type 'Spin-Off', SeriesRelationshipType::SPIN_OFF
+replace_related_type 'Side Story', SeriesRelationshipType::SIDE_STORY
+replace_related_type 'Prequel', SeriesRelationshipType::PREQUEL
+replace_related_type 'Sequel', SeriesRelationshipType::SEQUEL
 
 # paths
 $db.execute <<-SQL

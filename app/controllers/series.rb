@@ -48,4 +48,10 @@ SeriesController = proc do
             resource.authors_dataset
         end
     end
+
+    has_many :series_relationships do
+        fetch do
+            resource.series_relationships_dataset
+        end
+    end
 end

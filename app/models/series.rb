@@ -1,7 +1,7 @@
 require 'sequel'
 
 require_relative 'path.rb'
-require_relative 'related_series.rb'
+require_relative 'series_relationship.rb'
 require_relative 'associated_title.rb'
 require_relative 'genre.rb'
 require_relative 'category.rb'
@@ -10,7 +10,7 @@ require_relative 'serializer.rb'
 
 class Series < Sequel::Model
     one_to_many :paths
-    one_to_many :related_series, class: :RelatedSeries
+    one_to_many :series_relationships, key: :source_id
 
     many_to_many :associated_titles
     many_to_many :genres
@@ -28,9 +28,10 @@ class SeriesSerializer < Serializer
     attribute :completely_scanlated
     attribute :image do "https://www.mangaupdates.com/image/#{object.image}" end
 
-    has_many :paths
     has_many :genres
     has_many :categories
     has_many :artists
     has_many :authors
+    has_many :series_relationships
+    has_many :paths
 end
