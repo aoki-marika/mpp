@@ -37,15 +37,9 @@ SeriesController = proc do
         end
     end
 
-    has_many :artists do
+    has_many :staff do
         fetch do
-            resource.artists_dataset
-        end
-    end
-
-    has_many :authors do
-        fetch do
-            resource.authors_dataset
+            resource.staff_dataset
         end
     end
 

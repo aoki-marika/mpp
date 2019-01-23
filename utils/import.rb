@@ -1,6 +1,7 @@
 require 'sqlite3'
 
 require_relative '../app/models/series_relationship_type.rb'
+require_relative '../app/models/staff_role.rb'
 
 # pass the madokami db first and the mpp db second
 source = ARGV[0]
@@ -76,10 +77,10 @@ def insert_facet(table, type, second_type = nil)
 end
 
 # insert facet -> series records of the given type into the given table
-def insert_facet_series(table, type)
+def insert_facet_series(table, type, select = 'facet_id, series_id')
     $db.execute <<-SQL
         INSERT INTO destination.#{table}
-            SELECT facet_id, series_id
+            SELECT #{select}
             FROM facet_series
             WHERE type = '#{type}';
     SQL
@@ -99,8 +100,10 @@ insert_facet_series('categories_series', 'category')
 
 # people
 insert_facet('people', 'artist', 'author')
-insert_facet_series('artists_series', 'artist')
-insert_facet_series('authors_series', 'author')
+
+# staff
+insert_facet_series('staff', 'artist', select = "NULL, facet_id, series_id, #{StaffRole::ARTIST}")
+insert_facet_series('staff', 'author', select = "NULL, facet_id, series_id, #{StaffRole::AUTHOR}")
 
 # there are lots of title facets that are the same as their series' title, so remove those
 $db.execute 'PRAGMA foreign_keys = ON'

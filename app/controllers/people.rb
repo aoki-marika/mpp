@@ -19,9 +19,9 @@ PeopleController = proc do
         Person.dataset
     end
 
-    has_many :series do
+    has_many :roles do
         fetch do
-            resource.series_dataset
+            resource.roles_dataset
         end
     end
 end

@@ -7,11 +7,17 @@ require_relative 'series_relationships.rb'
 require_relative 'genres.rb'
 require_relative 'categories.rb'
 require_relative 'people.rb'
+require_relative 'staff.rb'
 require_relative 'paths.rb'
 require_relative 'archives.rb'
 require_relative '../models/user.rb'
 require_relative '../models/errors.rb'
 require_relative '../utils/madokami.rb'
+
+# activesupport pluralizes staff as staffs, so correct it
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+    inflect.irregular 'staff', 'staff'
+end
 
 class ApplicationController < Sinatra::Base
     register Sinatra::JSONAPI
@@ -63,6 +69,7 @@ class ApplicationController < Sinatra::Base
     resource :genres, &GenresController
     resource :categories, &CategoriesController
     resource :people, &PeopleController
+    resource :staff, &StaffController
     resource :paths, &PathsController
     resource :archives, &ArchivesController
 
