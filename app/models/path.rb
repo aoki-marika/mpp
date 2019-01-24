@@ -6,7 +6,7 @@ require_relative 'serializer.rb'
 
 class Path < Sequel::Model
     many_to_one :series
-    one_to_many :archives
+    one_to_many :archives, key: :parent_id
 end
 
 class PathSerializer < Serializer
