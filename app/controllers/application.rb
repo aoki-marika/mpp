@@ -73,5 +73,11 @@ class ApplicationController < Sinatra::Base
     resource :paths, &PathsController
     resource :archives, &ArchivesController
 
+    get %r{/images/(i\d+\.(?:jpg|jpeg|png))} do
+        name = params[:captures].first
+
+        redirect "https://manga.madokami.al/images/#{name}", 303
+    end
+
     freeze_jsonapi
 end

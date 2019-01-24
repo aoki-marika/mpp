@@ -25,7 +25,7 @@ class SeriesSerializer < Serializer
     attribute :description
     attribute :origin_status
     attribute :completely_scanlated
-    attribute :image do "https://www.mangaupdates.com/image/#{object.image}" end
+    attribute :image do "#{base_url}/images/#{object.image}" end
 
     has_many :genres
     has_many :categories
