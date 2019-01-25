@@ -27,39 +27,17 @@ class ApplicationController < Sinatra::Base
     end
 
     before do
-        # authenticate every route in the application
-        auth = Rack::Auth::Basic::Request.new(request.env)
+        auth = Rack::Auth::Basic::Request.new(env)
 
-        # called when the credentials are invalid
-        def unauthorized
-            raise UnauthorizedError.new
-        end
-
+        # verify that the basic auth is valid
         if auth.provided? and auth.basic? and auth.credentials
             username = auth.credentials.first
             password = auth.credentials.last
 
-            if user = User.first(name: username)
-                # verify the credentials against the db
-                if password == user.password
-                    pass
-                else
-                    unauthorized
-                end
-            else
-                # verify the credentials against madokami
-                Madokami.request '/', username, password do |r|
-                    if r.code == '200'
-                        # the credentials are valid, register the user and allow access
-                        User.create(name: username, password: password)
-                        pass
-                    else
-                        unauthorized
-                    end
-                end
-            end
+            # try to get a token for the user
+            @token = User.get_token username, password
         else
-            unauthorized
+            raise UnauthorizedError.new
         end
     end
 
