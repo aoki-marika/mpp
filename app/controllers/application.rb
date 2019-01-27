@@ -12,6 +12,7 @@ require_relative 'paths.rb'
 require_relative 'archives.rb'
 require_relative '../models/user.rb'
 require_relative '../models/errors.rb'
+require_relative '../models/page.rb'
 require_relative '../utils/madokami.rb'
 
 # activesupport pluralizes staff as staffs, so correct it
@@ -78,6 +79,18 @@ class ApplicationController < Sinatra::Base
         if Series.where(image: name).select(:image).any?
             # serve the image
             madokami_image "/images/#{name}"
+        else
+            not_found
+        end
+    end
+
+    get %r{/pages/(\d+)} do
+        id = params[:captures].first
+
+        # get the page with the given id, if it exists
+        if page = Page.with_pk(id)
+            # serve the image for page
+            madokami_image "/reader/image?path=#{Madokami.encode_path(page.archive.path)}&file=#{Madokami.encode_path(page.path)}"
         else
             not_found
         end

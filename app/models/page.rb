@@ -10,6 +10,7 @@ end
 class PageSerializer < Serializer
     attribute :path
     attribute :index
+    attribute :image do "/pages/#{id}" end
 
     has_one :archive
 end
