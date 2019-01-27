@@ -45,15 +45,12 @@ class Madokami
         # for whatever reason madokami double encodes paths in reader urls
         path = "/reader/#{self.encode_path(self.encode_path(archive_path))}"
 
-        # todo: some images are out of order
-        # e.g. 521295 (bokura no hentai v04) has `__cover2.jpg` at the end instead of beginning
-
         # make the reader request
         self.request path, token: token do |r|
             case r.code
                 when '200'
                     # parse out the files array
-                    files = r.body.match(/(?<=data-files="\[).+?(?=\]")/)[0].split(',')
+                    files = r.body.match(/(?<=data-files="\[).+?(?=\]")/)[0].split(',').sort
 
                     # cleanup all the filenames and map them to an array of hashes
                     files.map.with_index do |f, i|
