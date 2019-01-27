@@ -1,6 +1,13 @@
 require_relative '../models/series.rb'
+require_relative '../helpers/page_caching.rb'
 
 SeriesController = proc do
+    helpers PageCachingHelper do
+        def get_include
+            'paths.archives'
+        end
+    end
+
     helpers do
         def find(id)
             Series.with_pk(id.to_i)

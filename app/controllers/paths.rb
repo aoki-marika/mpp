@@ -1,6 +1,13 @@
 require_relative '../models/path.rb'
+require_relative '../helpers/page_caching.rb'
 
 PathsController = proc do
+    helpers PageCachingHelper do
+        def get_include
+            'archives'
+        end
+    end
+
     helpers do
         def find(id)
             Path.with_pk(id.to_i)

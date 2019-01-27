@@ -1,6 +1,9 @@
 require_relative '../models/archive.rb'
+require_relative '../helpers/page_caching.rb'
 
 ArchivesController = proc do
+    helpers PageCachingHelper
+
     helpers do
         def find(id)
             Archive.with_pk(id.to_i)
@@ -27,6 +30,7 @@ ArchivesController = proc do
 
     has_many :pages do
         fetch do
+            resource.cache_pages(@token)
             resource.pages_dataset
         end
     end

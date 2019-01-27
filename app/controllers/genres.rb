@@ -1,6 +1,13 @@
 require_relative '../models/genre.rb'
+require_relative '../helpers/page_caching.rb'
 
 GenresController = proc do
+    helpers PageCachingHelper do
+        def get_include
+            'series.paths.archives'
+        end
+    end
+
     helpers do
         def find(id)
             Genre.with_pk(id.to_i)

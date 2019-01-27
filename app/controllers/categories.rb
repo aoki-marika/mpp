@@ -1,6 +1,13 @@
 require_relative '../models/category.rb'
+require_relative '../helpers/page_caching.rb'
 
 CategoriesController = proc do
+    helpers PageCachingHelper do
+        def get_include
+            'series.paths.archives'
+        end
+    end
+
     helpers do
         def find(id)
             Category.with_pk(id.to_i)
