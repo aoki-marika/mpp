@@ -5,12 +5,22 @@ require 'erb'
 require_relative '../models/errors.rb'
 
 class Madokami
+    # Get the URI for `path` on Madokami.
+    def self.get_uri(path)
+        URI.join('https://manga.madokami.al/', path)
+    end
+
+    # Encode a path for usage in a URI on Madokami.
+    def self.encode_path(path)
+        ERB::Util.url_encode(path)
+    end
+
     # Make a request to the given path on Madokami with the given credentials.
     # If no token is given the authentication falls back to basic via username and password.
     # Yields the response when the request finishes.
     def self.request(path, token: nil, username: nil, password: nil)
         # get the uri to request
-        uri = URI.join('https://manga.madokami.al/', path)
+        uri = self.get_uri(path)
 
         # start an ssl connection
         Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
@@ -32,8 +42,8 @@ class Madokami
 
     # Make a request to get the pages for an archive.
     def self.get_pages(archive_path, token)
-        # for whatever reason madokami double encodes paths in urls
-        path = "/reader/#{ERB::Util.url_encode(ERB::Util.url_encode(archive_path))}"
+        # for whatever reason madokami double encodes paths in reader urls
+        path = "/reader/#{self.encode_path(self.encode_path(archive_path))}"
 
         # make the reader request
         self.request path, token: token do |r|

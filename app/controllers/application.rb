@@ -24,6 +24,26 @@ class ApplicationController < Sinatra::Base
 
     helpers do
         prepend Sinja::Sequel::Core
+
+        def unauthorized
+            raise UnauthorizedError.new
+        end
+
+        def madokami_image(path)
+            # request the image
+            Madokami.request path, token: @token do |r|
+                case r.code
+                    when '200'
+                        # serve the image data
+                        content_type r['Content-Type']
+                        r.body
+                    when '302', '401'
+                        unauthorized
+                    when '404'
+                        not_found
+                end
+            end
+        end
     end
 
     before do
@@ -37,7 +57,7 @@ class ApplicationController < Sinatra::Base
             # try to get a token for the user
             @token = User.get_token username, password
         else
-            raise UnauthorizedError.new
+            unauthorized
         end
     end
 
@@ -54,7 +74,13 @@ class ApplicationController < Sinatra::Base
     get %r{/images/(i\d+\.(?:jpg|jpeg|png))} do
         name = params[:captures].first
 
-        redirect "https://manga.madokami.al/images/#{name}", 303
+        # verify that the image name is valid
+        if Series.where(image: name).select(:image).any?
+            # serve the image
+            madokami_image "/images/#{name}"
+        else
+            not_found
+        end
     end
 
     freeze_jsonapi
