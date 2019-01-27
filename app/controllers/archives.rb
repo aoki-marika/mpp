@@ -24,4 +24,10 @@ ArchivesController = proc do
             resource.parent
         end
     end
+
+    has_many :pages do
+        fetch do
+            resource.pages_dataset
+        end
+    end
 end
